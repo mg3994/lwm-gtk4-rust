@@ -2,7 +2,10 @@
 ; Uses NSIS (Nullsoft Scriptable Install System)
 
 !define APP_NAME "LinkWithMentor"
-!define APP_VERSION "1.0.3"
+; Get version from environment variable or use default
+!ifndef APP_VERSION
+!define APP_VERSION "1.0.10"
+!endif
 !define APP_PUBLISHER "LinkWithMentor Team"
 !define APP_URL "https://github.com/mg3994/lwm-gtk4-rust"
 !define APP_EXECUTABLE "linkwithmentor.exe"
