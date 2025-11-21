@@ -12,13 +12,9 @@ const APP_ID: &str = "com.linkwithmentor";
 fn main() -> glib::ExitCode {
     let app = Application::builder().application_id(APP_ID).build();
 
-    app.connect_startup(|app| {
+    app.connect_startup(|_| {
         load_css();
-        
-        // Set application icon
-        if let Ok(texture) = gdk::Texture::from_file(&glib::fs::File::for_path("resources/icon.ico")) {
-            app.set_icon(&texture);
-        }
+        // Icon is embedded in the executable via build.rs
     });
 
     app.connect_activate(build_ui);
@@ -45,7 +41,7 @@ fn build_ui(app: &Application) {
         .default_height(900)
         .build();
 
-    // Icon is set at application level in startup handler
+    // Icon is embedded in executable via build.rs for Windows
 
     // Main container
     let main_box = GtkBox::new(Orientation::Horizontal, 0);
