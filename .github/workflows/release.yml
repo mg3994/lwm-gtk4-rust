@@ -61,7 +61,7 @@ jobs:
         $msys2Path = "C:\msys64\mingw64\bin"
         
         # Debug: List available GTK/GLib DLLs
-        Write-Host "Available GTK/GLib DLLs in $msys2Path:"
+        Write-Host "Available GTK/GLib DLLs in ${msys2Path}:"
         Get-ChildItem "$msys2Path\lib*gtk*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
         Get-ChildItem "$msys2Path\lib*glib*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
         Get-ChildItem "$msys2Path\lib*gobject*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
@@ -119,7 +119,7 @@ jobs:
         # Combine all DLL lists
         $allDlls = $coreDlls + $graphicsDlls + $systemDlls + $optionalDlls
         
-        Write-Host "Copying GTK4 DLLs from $msys2Path"
+        Write-Host "Copying GTK4 DLLs from ${msys2Path}"
         $copiedCount = 0
         $missingCount = 0
         
@@ -141,7 +141,7 @@ jobs:
         Write-Host "Copying all GTK/GLib DLLs found in MSYS2..."
         $patterns = @("*gtk*.dll", "*glib*.dll", "*gobject*.dll", "*gio*.dll", "*gdk*.dll", "*pango*.dll", "*cairo*.dll")
         foreach ($pattern in $patterns) {
-          Get-ChildItem "$msys2Path\$pattern" -ErrorAction SilentlyContinue | ForEach-Object {
+          Get-ChildItem "${msys2Path}\${pattern}" -ErrorAction SilentlyContinue | ForEach-Object {
             $destPath = Join-Path "release-bundle" $_.Name
             if (-not (Test-Path $destPath)) {
               Copy-Item $_.FullName "release-bundle/"
