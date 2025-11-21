@@ -48,131 +48,71 @@ jobs:
         cargo build --release
 
     - name: Create release bundle
-      shell: pwsh
+      shell: msys2 {0}
       run: |
-        New-Item -ItemType Directory -Force -Path release-bundle
-        Copy-Item target/release/linkwithmentor.exe release-bundle/
-        Copy-Item -Recurse resources release-bundle/
-        Copy-Item README.md release-bundle/
-        Copy-Item INSTALLATION.md release-bundle/
-        Copy-Item LICENSE release-bundle/ -ErrorAction SilentlyContinue
+        # Create release bundle directory
+        mkdir -p release-bundle
         
-        # Copy GTK4 DLLs from MSYS2
-        $msys2Path = "C:\msys64\mingw64\bin"
+        # Copy main executable and resources
+        cp target/release/linkwithmentor.exe release-bundle/
+        cp -r resources release-bundle/
+        cp README.md release-bundle/
+        cp INSTALLATION.md release-bundle/
+        cp LICENSE release-bundle/ 2>/dev/null || true
         
-        # Debug: List available GTK/GLib DLLs
-        Write-Host "Available GTK/GLib DLLs in ${msys2Path}:"
-        Get-ChildItem "$msys2Path\lib*gtk*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
-        Get-ChildItem "$msys2Path\lib*glib*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
-        Get-ChildItem "$msys2Path\lib*gobject*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
-        Get-ChildItem "$msys2Path\lib*gio*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+        # Find and copy GTK4 DLLs using ldd to get actual dependencies
+        echo "Finding GTK4 dependencies..."
+        ldd target/release/linkwithmentor.exe | grep -E "(gtk|glib|gobject|gio|gdk|pango|cairo)" | awk '{print $3}' | while read dll; do
+          if [ -f "$dll" ]; then
+            cp "$dll" release-bundle/
+            echo "✓ Copied dependency: $(basename $dll)"
+          fi
+        done
         
-        # Core GTK4 and GLib libraries
-        $coreDlls = @(
-          "libgtk-4-1.dll",
-          "libgdk-4-1.dll",
-          "libglib-2.0-0.dll",
-          "libgobject-2.0-0.dll", 
-          "libgio-2.0-0.dll",
-          "libgmodule-2.0-0.dll"
-        )
-        
-        # Graphics and rendering libraries
-        $graphicsDlls = @(
-          "libcairo-2.dll",
-          "libcairo-gobject-2.dll",
-          "libpango-1.0-0.dll",
-          "libpangocairo-1.0-0.dll",
-          "libpangowin32-1.0-0.dll",
-          "libgdk_pixbuf-2.0-0.dll",
-          "libharfbuzz-0.dll",
-          "libfontconfig-1.dll",
-          "libfreetype-6.dll",
-          "libpixman-1-0.dll",
-          "libpng16-16.dll"
-        )
-        
-        # System and utility libraries
-        $systemDlls = @(
-          "libintl-8.dll",
-          "libiconv-2.dll", 
-          "libpcre2-8-0.dll",
-          "libffi-8.dll",
-          "zlib1.dll",
-          "libwinpthread-1.dll",
-          "libgcc_s_seh-1.dll",
-          "libstdc++-6.dll",
-          "libbz2-1.dll",
-          "libexpat-1.dll"
-        )
-        
-        # Optional libraries (may not exist in all installations)
-        $optionalDlls = @(
-          "libbrotlidec.dll",
-          "libbrotlicommon.dll", 
-          "libgraphite2.dll",
-          "libfribidi-0.dll",
-          "libthai-0.dll",
-          "libdatrie-1.dll"
-        )
-        
-        # Combine all DLL lists
-        $allDlls = $coreDlls + $graphicsDlls + $systemDlls + $optionalDlls
-        
-        Write-Host "Copying GTK4 DLLs from ${msys2Path}"
-        $copiedCount = 0
-        $missingCount = 0
-        
-        foreach ($dll in $allDlls) {
-          $source = Join-Path $msys2Path $dll
-          if (Test-Path $source) {
-            Copy-Item $source release-bundle/
-            Write-Host "✓ Copied: $dll"
-            $copiedCount++
-          } else {
-            Write-Host "⚠ Missing: $dll"
-            $missingCount++
-          }
-        }
-        
-        Write-Host "Summary: $copiedCount DLLs copied, $missingCount missing"
-        
-        # Alternative approach: Copy all GTK/GLib related DLLs found
-        Write-Host "Copying all GTK/GLib DLLs found in MSYS2..."
-        $patterns = @("*gtk*.dll", "*glib*.dll", "*gobject*.dll", "*gio*.dll", "*gdk*.dll", "*pango*.dll", "*cairo*.dll")
-        foreach ($pattern in $patterns) {
-          Get-ChildItem "${msys2Path}\${pattern}" -ErrorAction SilentlyContinue | ForEach-Object {
-            $destPath = Join-Path "release-bundle" $_.Name
-            if (-not (Test-Path $destPath)) {
-              Copy-Item $_.FullName "release-bundle/"
-              Write-Host "✓ Auto-copied: $($_.Name)"
-            }
-          }
-        }
-        
-        # Verify critical DLLs are present
-        $criticalDlls = @("libgtk-4-1.dll", "libglib-2.0-0.dll", "libgobject-2.0-0.dll", "libgio-2.0-0.dll")
-        foreach ($dll in $criticalDlls) {
-          $bundlePath = Join-Path "release-bundle" $dll
-          if (-not (Test-Path $bundlePath)) {
-            Write-Error "CRITICAL: $dll is missing from bundle!"
-            exit 1
-          } else {
-            Write-Host "✓ Verified: $dll is in bundle"
-          }
-        }
+        # Copy additional GTK4 runtime DLLs that might not show in ldd
+        for pattern in libgtk-4-*.dll libgdk-4-*.dll libglib-2.0-*.dll libgobject-2.0-*.dll libgio-2.0-*.dll libgmodule-2.0-*.dll libcairo-*.dll libpango*.dll libgdk_pixbuf-*.dll libharfbuzz-*.dll libfontconfig-*.dll libfreetype-*.dll libpng*.dll libintl-*.dll libiconv-*.dll libpcre2-*.dll libffi-*.dll zlib*.dll libwinpthread-*.dll libgcc_s_*.dll libstdc++*.dll; do
+          find /mingw64/bin -name "$pattern" -exec cp {} release-bundle/ \; 2>/dev/null || true
+        done
         
         # Copy GTK4 data files
-        $gtkDataPath = "C:\msys64\mingw64\share\glib-2.0\schemas"
-        if (Test-Path $gtkDataPath) {
-          New-Item -ItemType Directory -Force -Path release-bundle/share/glib-2.0
-          Copy-Item -Recurse $gtkDataPath release-bundle/share/glib-2.0/
-          Write-Host "Copied GTK schemas"
-        }
+        if [ -d "/mingw64/share/glib-2.0/schemas" ]; then
+          mkdir -p release-bundle/share/glib-2.0
+          cp -r /mingw64/share/glib-2.0/schemas release-bundle/share/glib-2.0/
+          echo "Copied GTK schemas"
+        fi
         
+        # Copy additional GTK4 data
+        if [ -d "/mingw64/share/gtk-4.0" ]; then
+          mkdir -p release-bundle/share
+          cp -r /mingw64/share/gtk-4.0 release-bundle/share/
+          echo "Copied GTK4 data"
+        fi
+        
+        # List what we copied
+        echo "Release bundle contents:"
+        ls -la release-bundle/
+        echo "DLL count: $(ls release-bundle/*.dll 2>/dev/null | wc -l)"
+
+    - name: Create launcher and finalize bundle
+      shell: pwsh
+      run: |
         # Create a simple launcher script
         $launcherScript = '@echo off' + "`n" + 'set GTK_THEME=win32' + "`n" + 'set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas' + "`n" + '"%~dp0linkwithmentor.exe" %*'
         $launcherScript | Out-File -FilePath "release-bundle/LinkWithMentor.bat" -Encoding ASCII
+        
+        # Verify critical files exist
+        $criticalFiles = @("linkwithmentor.exe", "LinkWithMentor.bat")
+        foreach ($file in $criticalFiles) {
+          $filePath = Join-Path "release-bundle" $file
+          if (-not (Test-Path $filePath)) {
+            Write-Error "CRITICAL: $file is missing from bundle!"
+            exit 1
+          } else {
+            Write-Host "✓ Verified: $file is in bundle"
+          }
+        }
+        
+        Write-Host "Bundle creation completed successfully"
 
     - name: Install NSIS
       shell: pwsh
