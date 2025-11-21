@@ -2,7 +2,20 @@
 
 ## Windows Installation
 
-### Option 1: Use the Release Bundle (Recommended)
+### Option 1: Windows Installer (Recommended)
+
+1. Download `LinkWithMentor-Setup.exe` from the [Releases](https://github.com/mg3994/lwm-gtk4-rust/releases) page
+2. Run the installer as Administrator
+3. Follow the installation wizard
+4. Launch from Start Menu or Desktop shortcut
+
+The installer automatically:
+- Installs all GTK4 dependencies
+- Creates shortcuts
+- Adds to Windows Add/Remove Programs
+- Sets up proper environment variables
+
+### Option 2: Portable ZIP Bundle
 
 1. Download the latest `LinkWithMentor-Windows-x64.zip` from the [Releases](https://github.com/mg3994/lwm-gtk4-rust/releases) page
 2. Extract the ZIP file to a folder of your choice (e.g., `C:\Program Files\LinkWithMentor\`)

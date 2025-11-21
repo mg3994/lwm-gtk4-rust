@@ -179,7 +179,35 @@ set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas
 "@
         $launcherScript | Out-File -FilePath "release-bundle/LinkWithMentor.bat" -Encoding ASCII
 
-    - name: Create ZIP archive
+    - name: Install NSIS
+      shell: pwsh
+      run: |
+        # Download and install NSIS
+        $nsisUrl = "https://sourceforge.net/projects/nsis/files/NSIS%203/3.09/nsis-3.09-setup.exe/download"
+        Invoke-WebRequest -Uri $nsisUrl -OutFile "nsis-setup.exe"
+        Start-Process -FilePath "nsis-setup.exe" -ArgumentList "/S" -Wait
+        
+        # Add NSIS to PATH
+        $env:PATH += ";C:\Program Files (x86)\NSIS"
+        echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Create Installer
+      shell: pwsh
+      run: |
+        # Build the NSIS installer
+        & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+        
+        # Verify installer was created
+        if (Test-Path "LinkWithMentor-Setup.exe") {
+          Write-Host "✓ Installer created successfully"
+          $size = (Get-Item "LinkWithMentor-Setup.exe").Length / 1MB
+          Write-Host "Installer size: $([math]::Round($size, 2)) MB"
+        } else {
+          Write-Error "Failed to create installer"
+          exit 1
+        }
+
+    - name: Create ZIP archive (fallback)
       shell: pwsh
       run: |
         Compress-Archive -Path release-bundle/* -DestinationPath LinkWithMentor-Windows-x64.zip
@@ -188,7 +216,9 @@ set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v2
       with:
-        files: LinkWithMentor-Windows-x64.zip
+        files: |
+          LinkWithMentor-Setup.exe
+          LinkWithMentor-Windows-x64.zip
         draft: false
         prerelease: false
         generate_release_notes: true
