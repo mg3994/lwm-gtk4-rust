@@ -10,26 +10,30 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  test:
-    name: Test and Check
+  check:
+    name: Check
     runs-on: windows-latest
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
     
     - name: Setup MSYS2
       uses: msys2/setup-msys2@v2
       with:
         msystem: MINGW64
         update: true
+        path-type: inherit
         install: >-
           mingw-w64-x86_64-gtk4
           mingw-w64-x86_64-pkg-config
           mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-rust
 
-    - name: Cache cargo
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Cache dependencies
       uses: actions/cache@v4
       with:
         path: |
@@ -38,28 +42,83 @@ jobs:
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-    - name: Check formatting
+    - name: Check code
       shell: msys2 {0}
       run: |
         export PATH="/mingw64/bin:$PATH"
-        cargo fmt --check
+        cargo check
 
-    - name: Run clippy
-      shell: msys2 {0}
-      run: |
-        export PATH="/mingw64/bin:$PATH"
-        cargo clippy -- -D warnings
-      continue-on-error: false
+  test:
+    name: Test
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        path-type: inherit
+        install: >-
+          mingw-w64-x86_64-gtk4
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-gcc
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
 
     - name: Run tests
       shell: msys2 {0}
       run: |
         export PATH="/mingw64/bin:$PATH"
         cargo test
-      continue-on-error: true
 
-    - name: Build
+  clippy:
+    name: Clippy
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2@v2
+      with:
+        msystem: MINGW64
+        update: true
+        path-type: inherit
+        install: >-
+          mingw-w64-x86_64-gtk4
+          mingw-w64-x86_64-pkg-config
+          mingw-w64-x86_64-gcc
+
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: clippy
+
+    - name: Run clippy
       shell: msys2 {0}
       run: |
         export PATH="/mingw64/bin:$PATH"
-        cargo build --release
+        cargo clippy -- -D warnings
+
+  fmt:
+    name: Format
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Rust
+      uses: actions-rust-lang/setup-rust-toolchain@v1
+      with:
+        toolchain: stable
+        components: rustfmt
+
+    - name: Check formatting
+      run: cargo fmt -- --check

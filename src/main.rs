@@ -1479,3 +1479,123 @@ fn create_create_post_view() -> ScrolledWindow {
     scroll.set_child(Some(&post_box));
     scroll
 }
+
+fn create_analytics_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("📊 Analytics", "Track your engagement and growth");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Analytics Dashboard Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
+
+fn create_events_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("🎮 Events", "Discover and join upcoming events");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Events Calendar Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
+
+fn create_jobs_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("💼 Jobs", "Find your next career opportunity");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Job Board Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
+
+fn create_achievements_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("🏆 Achievements", "Your badges and milestones");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Achievements System Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
+
+fn create_learning_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("📚 Learning", "Expand your skills with courses");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Learning Platform Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
+
+fn create_discover_view() -> ScrolledWindow {
+    let scroll = ScrolledWindow::new();
+    let box_container = GtkBox::new(Orientation::Vertical, 20);
+    box_container.set_margin_start(40);
+    box_container.set_margin_end(40);
+    box_container.set_margin_top(30);
+    box_container.set_margin_bottom(30);
+    box_container.add_css_class("feed-container");
+
+    let header = create_section_header("🌐 Discover", "Explore new content and people");
+    box_container.append(&header);
+
+    let label = Label::new(Some("Discovery Feed Coming Soon..."));
+    label.add_css_class("section-subtitle");
+    box_container.append(&label);
+
+    scroll.set_child(Some(&box_container));
+    scroll
+}
