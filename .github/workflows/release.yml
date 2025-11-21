@@ -123,20 +123,39 @@ jobs:
     - name: Install NSIS
       shell: pwsh
       run: |
-        # Download and install NSIS
-        $nsisUrl = "https://sourceforge.net/projects/nsis/files/NSIS%203/3.09/nsis-3.09-setup.exe/download"
-        Invoke-WebRequest -Uri $nsisUrl -OutFile "nsis-setup.exe"
-        Start-Process -FilePath "nsis-setup.exe" -ArgumentList "/S" -Wait
+        # Install NSIS using Chocolatey (pre-installed on GitHub Actions)
+        choco install nsis -y
         
-        # Add NSIS to PATH
-        $env:PATH += ";C:\Program Files (x86)\NSIS"
-        echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        # Refresh environment variables
+        refreshenv
+        
+        # Verify NSIS installation
+        if (Test-Path "C:\Program Files (x86)\NSIS\makensis.exe") {
+          Write-Host "✓ NSIS installed successfully"
+        } else {
+          Write-Error "NSIS installation failed"
+          exit 1
+        }
 
     - name: Create Installer
       shell: pwsh
       run: |
+        # Find NSIS makensis.exe
+        $nsisPath = @(
+          "C:\Program Files (x86)\NSIS\makensis.exe",
+          "C:\Program Files\NSIS\makensis.exe",
+          "C:\ProgramData\chocolatey\lib\nsis\tools\makensis.exe"
+        ) | Where-Object { Test-Path $_ } | Select-Object -First 1
+        
+        if (-not $nsisPath) {
+          Write-Error "NSIS makensis.exe not found"
+          exit 1
+        }
+        
+        Write-Host "Using NSIS at: $nsisPath"
+        
         # Build the NSIS installer
-        & "C:\Program Files (x86)\NSIS\makensis.exe" installer.nsi
+        & $nsisPath installer.nsi
         
         # Verify installer was created
         if (Test-Path "LinkWithMentor-Setup.exe") {
