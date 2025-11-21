@@ -26,11 +26,7 @@ jobs:
           mingw-w64-x86_64-gtk4
           mingw-w64-x86_64-pkg-config
           mingw-w64-x86_64-gcc
-
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-      with:
-        toolchain: stable
+          mingw-w64-x86_64-rust
 
     - name: Cache cargo
       uses: actions/cache@v4
