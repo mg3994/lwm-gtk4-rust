@@ -54,7 +54,70 @@ jobs:
         Copy-Item target/release/linkwithmentor.exe release-bundle/
         Copy-Item -Recurse resources release-bundle/
         Copy-Item README.md release-bundle/
+        Copy-Item INSTALLATION.md release-bundle/
         Copy-Item LICENSE release-bundle/ -ErrorAction SilentlyContinue
+        
+        # Copy GTK4 DLLs from MSYS2
+        $msys2Path = "C:\msys64\mingw64\bin"
+        $dlls = @(
+          "libgtk-4-1.dll",
+          "libgdk-4-1.dll", 
+          "libglib-2.0-0.dll",
+          "libgobject-2.0-0.dll",
+          "libgio-2.0-0.dll",
+          "libcairo-2.dll",
+          "libcairo-gobject-2.dll",
+          "libpango-1.0-0.dll",
+          "libpangocairo-1.0-0.dll",
+          "libpangowin32-1.0-0.dll",
+          "libgdk_pixbuf-2.0-0.dll",
+          "libintl-8.dll",
+          "libiconv-2.dll",
+          "libpcre2-8-0.dll",
+          "libffi-8.dll",
+          "zlib1.dll",
+          "libwinpthread-1.dll",
+          "libgcc_s_seh-1.dll",
+          "libstdc++-6.dll",
+          "libharfbuzz-0.dll",
+          "libfontconfig-1.dll",
+          "libfreetype-6.dll",
+          "libpixman-1-0.dll",
+          "libpng16-16.dll",
+          "libbz2-1.dll",
+          "libbrotlidec.dll",
+          "libbrotlicommon.dll",
+          "libgraphite2.dll",
+          "libexpat-1.dll"
+        )
+        
+        Write-Host "Copying GTK4 DLLs from $msys2Path"
+        foreach ($dll in $dlls) {
+          $source = Join-Path $msys2Path $dll
+          if (Test-Path $source) {
+            Copy-Item $source release-bundle/
+            Write-Host "Copied: $dll"
+          } else {
+            Write-Host "Warning: $dll not found"
+          }
+        }
+        
+        # Copy GTK4 data files
+        $gtkDataPath = "C:\msys64\mingw64\share\glib-2.0\schemas"
+        if (Test-Path $gtkDataPath) {
+          New-Item -ItemType Directory -Force -Path release-bundle/share/glib-2.0
+          Copy-Item -Recurse $gtkDataPath release-bundle/share/glib-2.0/
+          Write-Host "Copied GTK schemas"
+        }
+        
+        # Create a simple launcher script
+        $launcherScript = @"
+@echo off
+set GTK_THEME=win32
+set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas
+"%~dp0linkwithmentor.exe" %*
+"@
+        $launcherScript | Out-File -FilePath "release-bundle/LinkWithMentor.bat" -Encoding ASCII
 
     - name: Create ZIP archive
       shell: pwsh
