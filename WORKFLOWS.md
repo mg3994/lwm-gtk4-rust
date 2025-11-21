@@ -12,26 +12,14 @@ This document explains the CI/CD workflows set up for LinkWithMentor.
 
 **Jobs:**
 
-#### Check
-- Runs `cargo check` to verify code compiles
-- Uses MSYS2 for GTK4 dependencies
-- Caches dependencies for faster builds
+#### Validate and Build
+Runs sequentially on `windows-latest`:
+1. **Format Check**: Ensures code style (`cargo fmt`)
+2. **Clippy**: Lints for common mistakes (`cargo clippy`)
+3. **Test**: Runs unit and integration tests (`cargo test`)
+4. **Check**: Verifies compilation (`cargo check`)
 
-#### Test
-- Runs `cargo test` to execute all tests
-- Ensures code functionality
-
-#### Clippy
-- Runs `cargo clippy` for linting
-- Fails on warnings (`-D warnings`)
-- Ensures code quality
-
-#### Format
-- Runs `cargo fmt --check`
-- Ensures consistent code formatting
-- Runs on Ubuntu (faster, no GTK4 needed for formatting)
-
-**Status:** ✅ Runs on every push and PR
+**Status:** ✅ Runs on every push and PR. All steps must pass.
 
 ---
 
