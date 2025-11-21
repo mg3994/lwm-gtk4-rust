@@ -1,0 +1,11 @@
+[package]
+name = "linkwithmentor"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gtk4 = { version = "0.10", features = ["v4_10"] }
+
+[profile.release]
+opt-level = 3
+lto = true

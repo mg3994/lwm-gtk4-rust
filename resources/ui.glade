@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Comprehensive UI for LinkWithMentor social media app -->
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <!-- Main Application Window -->
+  <object class="GtkApplicationWindow" id="main_window">
+    <property name="default-width">1200</property>
+    <property name="default-height">800</property>
+    <property name="title">LinkWithMentor</property>
+    <property name="icon-name">application-default-icon</property>
+    <child>
+      <!-- Root container: horizontal box with sidebar and main area -->
+      <object class="GtkBox" id="root_box">
+        <property name="orientation">horizontal</property>
+        <property name="spacing">0</property>
+        <!-- Sidebar navigation -->
+        <child>
+          <object class="GtkBox" id="sidebar">
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <property name="margin-start">16</property>
+            <property name="margin-end">16</property>
+            <property name="margin-top">24</property>
+            <property name="margin-bottom">24</property>
+            <property name="css-classes">sidebar</property>
+            <!-- Logo -->
+            <child>
+              <object class="GtkImage" id="logo_image">
+                <property name="icon-name">avatar-default</property>
+                <property name="pixel-size">48</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <!-- Navigation buttons -->
+            <child>
+              <object class="GtkButton" id="nav_home">
+                <property name="label">Home</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">go-home-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="nav_chat">
+                <property name="label">Chat</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">mail-unread-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="nav_groups">
+                <property name="label">Groups</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">user-group-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="nav_media">
+                <property name="label">Media</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">camera-photo-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="nav_share">
+                <property name="label">Share</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">document-send-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="nav_profile">
+                <property name="label">Profile</property>
+                <property name="css-classes">nav-button</property>
+                <property name="halign">start</property>
+                <property name="icon-name">avatar-default-symbolic</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <!-- Main content area -->
+        <child>
+          <object class="GtkStack" id="main_stack">
+            <property name="transition-type">crossfade</property>
+            <!-- Home Feed -->
+            <child>
+              <object class="GtkScrolledWindow" id="home_scroll">
+                <property name="hexpand">true</property>
+                <property name="vexpand">true</property>
+                <child>
+                  <object class="GtkBox" id="feed_box">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">16</property>
+                    <property name="margin">24</property>
+                    <property name="css-classes">feed-container</property>
+                    <!-- Example post (will be duplicated at runtime) -->
+                    <child>
+                      <object class="GtkFrame" id="post_1">
+                        <property name="css-classes">post-card</property>
+                        <child>
+                          <object class="GtkBox" id="post_content">
+                            <property name="orientation">vertical</property>
+                            <property name="spacing">8</property>
+                            <child>
+                              <object class="GtkLabel" id="post_user">
+                                <property name="label">Alice</property>
+                                <property name="halign">start</property>
+                                <property name="css-classes">post-user</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="post_text">
+                                <property name="label">Just finished a great mentoring session! 🚀</property>
+                                <property name="wrap">true</property>
+                                <property name="halign">start</property>
+                                <property name="css-classes">post-text</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkImage" id="post_image">
+                                <property name="file">../resources/sample_image.png</property>
+                                <property name="halign">center</property>
+                                <property name="css-classes">post-media</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="post_actions">
+                                <property name="orientation">horizontal</property>
+                                <property name="spacing">12</property>
+                                <child>
+                                  <object class="GtkButton" id="like_button">
+                                    <property name="label">👍 Like</property>
+                                    <property name="css-classes">action-button</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="comment_button">
+                                    <property name="label">💬 Comment</property>
+                                    <property name="css-classes">action-button</property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="share_button">
+                                    <property name="label">🔗 Share</property>
+                                    <property name="css-classes">action-button</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <!-- Chat view -->
+            <child>
+              <object class="GtkBox" id="chat_view">
+                <property name="orientation">vertical</property>
+                <property name="spacing">8</property>
+                <property name="margin">24</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="chat_scroll">
+                    <property name="hexpand">true</property>
+                    <property name="vexpand">true</property>
+                    <child>
+                      <object class="GtkListBox" id="chat_list"/>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkBox" id="chat_input_box">
+                    <property name="orientation">horizontal</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkEntry" id="chat_entry">
+                        <property name="placeholder-text">Type a message…</property>
+                        <property name="hexpand">true</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="send_button">
+                        <property name="label">Send</property>
+                        <property name="css-classes">action-button</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <!-- Groups view (placeholder) -->
+            <child>
+              <object class="GtkLabel" id="groups_placeholder">
+                <property name="label">Groups view – coming soon!</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="css-classes">placeholder</property>
+              </object>
+            </child>
+            <!-- Media view (placeholder) -->
+            <child>
+              <object class="GtkLabel" id="media_placeholder">
+                <property name="label">Media view – coming soon!</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="css-classes">placeholder</property>
+              </object>
+            </child>
+            <!-- Share view (placeholder) -->
+            <child>
+              <object class="GtkLabel" id="share_placeholder">
+                <property name="label">Share content – coming soon!</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="css-classes">placeholder</property>
+              </object>
+            </child>
+            <!-- Profile view (placeholder) -->
+            <child>
+              <object class="GtkLabel" id="profile_placeholder">
+                <property name="label">Profile page – coming soon!</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="css-classes">placeholder</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
