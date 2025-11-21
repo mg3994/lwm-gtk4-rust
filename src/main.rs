@@ -6,6 +6,7 @@ use gtk4::{
     Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Frame, Label,
     ListBox, Orientation, ScrolledWindow, Stack,
 };
+use gdk::gdk_pixbuf;
 
 const APP_ID: &str = "com.linkwithmentor";
 
@@ -39,6 +40,11 @@ fn build_ui(app: &Application) {
         .default_width(1400)
         .default_height(900)
         .build();
+
+    // Set window icon
+    if let Ok(pixbuf) = gdk::gdk_pixbuf::Pixbuf::from_file("resources/icon.ico") {
+        window.set_icon(&pixbuf);
+    }
 
     // Main container
     let main_box = GtkBox::new(Orientation::Horizontal, 0);
