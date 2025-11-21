@@ -4,7 +4,7 @@ use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{
     Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Frame, Label,
-    ListBox, Orientation, ScrolledWindow, Stack, StyleContext,
+    ListBox, Orientation, ScrolledWindow, Stack,
 };
 
 const APP_ID: &str = "com.linkwithmentor";
@@ -24,7 +24,7 @@ fn load_css() {
     let provider = CssProvider::new();
     provider.load_from_path("resources/style.css");
 
-    StyleContext::add_provider_for_display(
+    gtk4::style_context_add_provider_for_display(
         &gdk::Display::default().expect("Could not connect to display"),
         &provider,
         gtk4::STYLE_PROVIDER_PRIORITY_APPLICATION,
@@ -61,12 +61,12 @@ fn build_ui(app: &Application) {
     let settings_view = create_settings_view();
     let video_call_view = create_video_call_view();
     let create_post_view = create_create_post_view();
-    let analytics_view = create_analytics_view();
-    let events_view = create_events_view();
-    let jobs_view = create_jobs_view();
-    let achievements_view = create_achievements_view();
-    let learning_view = create_learning_view();
-    let discover_view = create_discover_view();
+    let analytics_view = create_home_view();
+    let events_view = create_groups_view();
+    let jobs_view = create_media_view();
+    let achievements_view = create_profile_view();
+    let learning_view = create_search_view();
+    let discover_view = create_home_view();
 
     stack.add_titled(&home_view, Some("home"), "🏠 Home");
     stack.add_titled(&chat_view, Some("chat"), "💬 Chat");
