@@ -70,8 +70,14 @@ jobs:
         done
         
         # Copy additional GTK4 runtime DLLs that might not show in ldd
-        for pattern in libgtk-4-*.dll libgdk-4-*.dll libglib-2.0-*.dll libgobject-2.0-*.dll libgio-2.0-*.dll libgmodule-2.0-*.dll libcairo-*.dll libpango*.dll libgdk_pixbuf-*.dll libharfbuzz-*.dll libfontconfig-*.dll libfreetype-*.dll libpng*.dll libintl-*.dll libiconv-*.dll libpcre2-*.dll libffi-*.dll zlib*.dll libwinpthread-*.dll libgcc_s_*.dll libstdc++*.dll; do
-          find /mingw64/bin -name "$pattern" -exec cp {} release-bundle/ \; 2>/dev/null || true
+        # GTK4 uses -4-1.dll, GLib family uses -2.0-0.dll
+        for pattern in libgtk-4-1.dll libgdk-4-1.dll libglib-2.0-0.dll libgobject-2.0-0.dll libgio-2.0-0.dll libgmodule-2.0-0.dll libcairo-2.dll libcairo-gobject-2.dll libpango-1.0-0.dll libpangocairo-1.0-0.dll libpangowin32-1.0-0.dll libgdk_pixbuf-2.0-0.dll libharfbuzz-0.dll libfontconfig-1.dll libfreetype-6.dll libpng16-16.dll libintl-8.dll libiconv-2.dll libpcre2-8-0.dll libffi-8.dll zlib1.dll libwinpthread-1.dll libgcc_s_seh-1.dll libstdc++-6.dll libbz2-1.dll libexpat-1.dll; do
+          if [ -f "/mingw64/bin/$pattern" ]; then
+            cp "/mingw64/bin/$pattern" release-bundle/
+            echo "✓ Copied: $pattern"
+          else
+            echo "⚠ Missing: $pattern"
+          fi
         done
         
         # Copy GTK4 data files
