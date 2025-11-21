@@ -44,7 +44,11 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
     - name: Check formatting
-      run: cargo fmt --check
+      shell: msys2 {0}
+      run: |
+        export PATH="/mingw64/bin:$PATH"
+        cargo fmt --check
+      continue-on-error: false
 
     - name: Run clippy
       shell: msys2 {0}

@@ -1,18 +1,16 @@
 // LinkWithMentor - Advanced GTK4 Social Media Application
+use gtk4::gdk;
+use gtk4::glib;
 use gtk4::prelude::*;
 use gtk4::{
-    Application, ApplicationWindow, Box as GtkBox, Button, Entry, Frame, Label,
-    ListBox, Orientation, ScrolledWindow, Stack, CssProvider, StyleContext,
+    Application, ApplicationWindow, Box as GtkBox, Button, CssProvider, Entry, Frame, Label,
+    ListBox, Orientation, ScrolledWindow, Stack, StyleContext,
 };
-use gtk4::glib;
-use gtk4::gdk;
 
 const APP_ID: &str = "com.linkwithmentor";
 
 fn main() -> glib::ExitCode {
-    let app = Application::builder()
-        .application_id(APP_ID)
-        .build();
+    let app = Application::builder().application_id(APP_ID).build();
 
     app.connect_startup(|_| {
         load_css();
@@ -25,7 +23,7 @@ fn main() -> glib::ExitCode {
 fn load_css() {
     let provider = CssProvider::new();
     provider.load_from_path("resources/style.css");
-    
+
     StyleContext::add_provider_for_display(
         &gdk::Display::default().expect("Could not connect to display"),
         &provider,
@@ -44,7 +42,7 @@ fn build_ui(app: &Application) {
 
     // Main container
     let main_box = GtkBox::new(Orientation::Horizontal, 0);
-    
+
     // Create navigation stack
     let stack = Stack::builder()
         .transition_type(gtk4::StackTransitionType::SlideLeftRight)
@@ -76,7 +74,11 @@ fn build_ui(app: &Application) {
     stack.add_titled(&media_view, Some("media"), "📸 Media");
     stack.add_titled(&share_view, Some("share"), "📤 Share");
     stack.add_titled(&profile_view, Some("profile"), "👤 Profile");
-    stack.add_titled(&notifications_view, Some("notifications"), "🔔 Notifications");
+    stack.add_titled(
+        &notifications_view,
+        Some("notifications"),
+        "🔔 Notifications",
+    );
     stack.add_titled(&search_view, Some("search"), "🔍 Search");
     stack.add_titled(&settings_view, Some("settings"), "⚙️ Settings");
     stack.add_titled(&video_call_view, Some("videocall"), "📹 Video Call");
@@ -90,7 +92,7 @@ fn build_ui(app: &Application) {
 
     // Create custom sidebar
     let sidebar = create_sidebar(&stack);
-    
+
     main_box.append(&sidebar);
     main_box.append(&stack);
 
@@ -138,13 +140,13 @@ fn create_sidebar(stack: &Stack) -> GtkBox {
     for (page_name, icon, label_text, css_class) in nav_items {
         let button = Button::new();
         let button_box = GtkBox::new(Orientation::Horizontal, 12);
-        
+
         let icon_label = Label::new(Some(icon));
         icon_label.add_css_class("nav-icon");
         let text_label = Label::new(Some(label_text));
         text_label.set_halign(gtk4::Align::Start);
         text_label.add_css_class("nav-text");
-        
+
         button_box.append(&icon_label);
         button_box.append(&text_label);
         button.set_child(Some(&button_box));
@@ -174,7 +176,7 @@ fn create_sidebar(stack: &Stack) -> GtkBox {
     settings_text.add_css_class("nav-text");
     settings_box.append(&settings_icon);
     settings_box.append(&settings_text);
-    
+
     let stack_clone = stack.clone();
     settings_btn.connect_clicked(move |_| {
         stack_clone.set_visible_child_name("settings");
@@ -210,10 +212,30 @@ fn create_home_view() -> ScrolledWindow {
 
     // Sample posts
     let posts = vec![
-        ("Alice Johnson", "Just completed an amazing mentoring session on Rust! 🦀", "2 hours ago", "🎯"),
-        ("Bob Smith", "Looking for mentors in Machine Learning. Any recommendations?", "5 hours ago", "🤖"),
-        ("Carol Williams", "Sharing my latest project: A GTK4 social media app! Check it out 🚀", "1 day ago", "💻"),
-        ("David Brown", "Thanks to my mentor, I finally understood async/await! 🎉", "2 days ago", "⚡"),
+        (
+            "Alice Johnson",
+            "Just completed an amazing mentoring session on Rust! 🦀",
+            "2 hours ago",
+            "🎯",
+        ),
+        (
+            "Bob Smith",
+            "Looking for mentors in Machine Learning. Any recommendations?",
+            "5 hours ago",
+            "🤖",
+        ),
+        (
+            "Carol Williams",
+            "Sharing my latest project: A GTK4 social media app! Check it out 🚀",
+            "1 day ago",
+            "💻",
+        ),
+        (
+            "David Brown",
+            "Thanks to my mentor, I finally understood async/await! 🎉",
+            "2 days ago",
+            "⚡",
+        ),
     ];
 
     for (user, content, time, emoji) in posts {
@@ -265,7 +287,7 @@ fn create_post_card(user: &str, content: &str, time: &str, emoji: &str) -> Frame
     comment_btn.add_css_class("action-button");
     let share_btn = Button::with_label("🔗 Share");
     share_btn.add_css_class("action-button");
-    
+
     actions_box.append(&like_btn);
     actions_box.append(&comment_btn);
     actions_box.append(&share_btn);
@@ -301,7 +323,12 @@ fn create_chat_view() -> GtkBox {
 
     // Sample chats
     let chats = vec![
-        ("Alice Johnson", "Great! Let's schedule for tomorrow", "2m", true),
+        (
+            "Alice Johnson",
+            "Great! Let's schedule for tomorrow",
+            "2m",
+            true,
+        ),
         ("Bob Smith", "Thanks for the resources!", "1h", false),
         ("Carol Williams", "Can you review my code?", "3h", true),
         ("David Brown", "See you in the meeting!", "1d", false),
@@ -328,7 +355,7 @@ fn create_chat_view() -> GtkBox {
     chat_header.set_margin_end(20);
     chat_header.set_margin_top(12);
     chat_header.set_margin_bottom(12);
-    
+
     let header_avatar = Label::new(Some("👤"));
     header_avatar.add_css_class("chat-avatar");
     let header_name = Label::new(Some("Alice Johnson"));
@@ -340,7 +367,7 @@ fn create_chat_view() -> GtkBox {
     let spacer = GtkBox::new(Orientation::Horizontal, 0);
     spacer.set_hexpand(true);
     chat_header.append(&spacer);
-    
+
     let audio_btn = Button::with_label("🎤 Audio");
     audio_btn.add_css_class("call-button");
     let video_btn = Button::with_label("📹 Video");
@@ -418,11 +445,11 @@ fn create_chat_item(name: &str, message: &str, time: &str, unread: bool) -> GtkB
 
     let content_box = GtkBox::new(Orientation::Vertical, 4);
     content_box.set_hexpand(true);
-    
+
     let name_label = Label::new(Some(name));
     name_label.set_halign(gtk4::Align::Start);
     name_label.add_css_class("chat-item-name");
-    
+
     let message_label = Label::new(Some(message));
     message_label.set_halign(gtk4::Align::Start);
     message_label.set_ellipsize(gtk4::pango::EllipsizeMode::End);
@@ -443,13 +470,13 @@ fn create_chat_item(name: &str, message: &str, time: &str, unread: bool) -> GtkB
 
 fn create_message_bubble(sender: &str, text: &str, is_own: bool) -> GtkBox {
     let container = GtkBox::new(Orientation::Horizontal, 0);
-    
+
     let bubble = GtkBox::new(Orientation::Vertical, 4);
     bubble.set_margin_start(12);
     bubble.set_margin_end(12);
     bubble.set_margin_top(8);
     bubble.set_margin_bottom(8);
-    
+
     if is_own {
         bubble.add_css_class("message-bubble-own");
         container.set_halign(gtk4::Align::End);
@@ -491,10 +518,30 @@ fn create_groups_view() -> ScrolledWindow {
 
     // Sample groups
     let groups = vec![
-        ("Rust Developers", "2.5k members", "🦀", "Discuss Rust programming"),
-        ("UI/UX Design", "1.8k members", "🎨", "Share design resources"),
-        ("Career Mentorship", "3.2k members", "🎯", "Get career guidance"),
-        ("Open Source", "4.1k members", "💻", "Collaborate on projects"),
+        (
+            "Rust Developers",
+            "2.5k members",
+            "🦀",
+            "Discuss Rust programming",
+        ),
+        (
+            "UI/UX Design",
+            "1.8k members",
+            "🎨",
+            "Share design resources",
+        ),
+        (
+            "Career Mentorship",
+            "3.2k members",
+            "🎯",
+            "Get career guidance",
+        ),
+        (
+            "Open Source",
+            "4.1k members",
+            "💻",
+            "Collaborate on projects",
+        ),
     ];
 
     for (name, members, emoji, description) in groups {
@@ -521,15 +568,15 @@ fn create_group_card(name: &str, members: &str, emoji: &str, description: &str) 
 
     let info_box = GtkBox::new(Orientation::Vertical, 6);
     info_box.set_hexpand(true);
-    
+
     let name_label = Label::new(Some(name));
     name_label.set_halign(gtk4::Align::Start);
     name_label.add_css_class("group-name");
-    
+
     let desc_label = Label::new(Some(description));
     desc_label.set_halign(gtk4::Align::Start);
     desc_label.add_css_class("group-description");
-    
+
     let members_label = Label::new(Some(members));
     members_label.set_halign(gtk4::Align::Start);
     members_label.add_css_class("group-members");
@@ -659,8 +706,18 @@ fn create_share_view() -> GtkBox {
     main_box.append(&recent_label);
 
     let shares = vec![
-        ("Project Proposal.pdf", "Shared with Alice", "1 hour ago", "📄"),
-        ("Screenshot.png", "Shared in Rust Group", "3 hours ago", "🖼️"),
+        (
+            "Project Proposal.pdf",
+            "Shared with Alice",
+            "1 hour ago",
+            "📄",
+        ),
+        (
+            "Screenshot.png",
+            "Shared in Rust Group",
+            "3 hours ago",
+            "🖼️",
+        ),
         ("Tutorial.mp4", "Shared with Bob", "Yesterday", "📹"),
     ];
 
@@ -763,11 +820,7 @@ fn create_profile_view() -> ScrolledWindow {
     stats_box.set_halign(gtk4::Align::Center);
     stats_box.set_margin_top(16);
 
-    let stats = vec![
-        ("Posts", "42"),
-        ("Followers", "1.2k"),
-        ("Following", "856"),
-    ];
+    let stats = vec![("Posts", "42"), ("Followers", "1.2k"), ("Following", "856")];
 
     for (label, value) in stats {
         let stat_box = GtkBox::new(Orientation::Vertical, 4);
@@ -847,7 +900,7 @@ fn create_activity_item(activity: &str, time: &str, icon: &str) -> Frame {
 
 fn create_section_header(title: &str, subtitle: &str) -> GtkBox {
     let header_box = GtkBox::new(Orientation::Vertical, 8);
-    
+
     let title_label = Label::new(Some(title));
     title_label.set_halign(gtk4::Align::Start);
     title_label.add_css_class("section-title");
@@ -880,7 +933,7 @@ fn create_notifications_view() -> ScrolledWindow {
     // Filter buttons
     let filter_box = GtkBox::new(Orientation::Horizontal, 12);
     let filters = vec!["All", "Mentions", "Likes", "Comments", "Follows"];
-    
+
     for filter in filters {
         let filter_btn = Button::with_label(filter);
         filter_btn.add_css_class("filter-button");
@@ -894,11 +947,41 @@ fn create_notifications_view() -> ScrolledWindow {
     // Notifications
     let notifications = vec![
         ("👍", "Alice Johnson", "liked your post", "2 min ago", true),
-        ("💬", "Bob Smith", "commented: 'Great work!'", "15 min ago", true),
-        ("👥", "Carol Williams", "joined your group 'Rust Developers'", "1 hour ago", false),
-        ("🔗", "David Brown", "shared your post", "2 hours ago", false),
-        ("👤", "Emma Davis", "started following you", "5 hours ago", false),
-        ("💬", "Frank Miller", "mentioned you in a comment", "1 day ago", false),
+        (
+            "💬",
+            "Bob Smith",
+            "commented: 'Great work!'",
+            "15 min ago",
+            true,
+        ),
+        (
+            "👥",
+            "Carol Williams",
+            "joined your group 'Rust Developers'",
+            "1 hour ago",
+            false,
+        ),
+        (
+            "🔗",
+            "David Brown",
+            "shared your post",
+            "2 hours ago",
+            false,
+        ),
+        (
+            "👤",
+            "Emma Davis",
+            "started following you",
+            "5 hours ago",
+            false,
+        ),
+        (
+            "💬",
+            "Frank Miller",
+            "mentioned you in a comment",
+            "1 day ago",
+            false,
+        ),
         ("👍", "Grace Lee", "liked your comment", "2 days ago", false),
     ];
 
@@ -911,7 +994,13 @@ fn create_notifications_view() -> ScrolledWindow {
     scroll
 }
 
-fn create_notification_item(icon: &str, user: &str, action: &str, time: &str, unread: bool) -> Frame {
+fn create_notification_item(
+    icon: &str,
+    user: &str,
+    action: &str,
+    time: &str,
+    unread: bool,
+) -> Frame {
     let frame = Frame::new(None);
     frame.add_css_class("notification-item");
     if unread {
@@ -968,10 +1057,10 @@ fn create_search_view() -> GtkBox {
     search_entry.set_placeholder_text(Some("Search for anything..."));
     search_entry.set_hexpand(true);
     search_entry.add_css_class("search-entry-large");
-    
+
     let search_btn = Button::with_label("🔍 Search");
     search_btn.add_css_class("search-button");
-    
+
     search_box.append(&search_entry);
     search_box.append(&search_btn);
     main_box.append(&search_box);
@@ -979,7 +1068,7 @@ fn create_search_view() -> GtkBox {
     // Filter tabs
     let tabs_box = GtkBox::new(Orientation::Horizontal, 12);
     let tabs = vec!["All", "People", "Groups", "Posts", "Media"];
-    
+
     for tab in tabs {
         let tab_btn = Button::with_label(tab);
         tab_btn.add_css_class("tab-button");
@@ -1018,7 +1107,7 @@ fn create_search_view() -> GtkBox {
 
     let trending_box = GtkBox::new(Orientation::Horizontal, 12);
     let trending_topics = vec!["#Rust", "#GTK4", "#OpenSource", "#Mentorship", "#WebDev"];
-    
+
     for topic in trending_topics {
         let topic_btn = Button::with_label(topic);
         topic_btn.add_css_class("trending-tag");
@@ -1085,7 +1174,7 @@ fn create_settings_view() -> ScrolledWindow {
             ("Email", "user@example.com", true),
             ("Password", "••••••••", true),
             ("Phone", "+1 234 567 8900", true),
-        ]
+        ],
     );
     settings_box.append(&account_section);
 
@@ -1096,7 +1185,7 @@ fn create_settings_view() -> ScrolledWindow {
             ("Theme", "Auto (System)", false),
             ("Language", "English", false),
             ("Font Size", "Medium", false),
-        ]
+        ],
     );
     settings_box.append(&preferences_section);
 
@@ -1107,7 +1196,7 @@ fn create_settings_view() -> ScrolledWindow {
             ("Push Notifications", "Enabled", false),
             ("Email Notifications", "Enabled", false),
             ("Sound", "Enabled", false),
-        ]
+        ],
     );
     settings_box.append(&notif_section);
 
@@ -1118,7 +1207,7 @@ fn create_settings_view() -> ScrolledWindow {
             ("Profile Visibility", "Public", false),
             ("Two-Factor Auth", "Disabled", true),
             ("Data Sharing", "Limited", false),
-        ]
+        ],
     );
     settings_box.append(&privacy_section);
 
@@ -1338,18 +1427,18 @@ fn create_create_post_view() -> ScrolledWindow {
     for (i, (icon, label)) in media_types.iter().enumerate() {
         let media_btn = Button::new();
         let btn_box = GtkBox::new(Orientation::Vertical, 6);
-        
+
         let icon_label = Label::new(Some(icon));
         icon_label.add_css_class("media-type-icon");
-        
+
         let text_label = Label::new(Some(label));
         text_label.add_css_class("media-type-label");
-        
+
         btn_box.append(&icon_label);
         btn_box.append(&text_label);
         media_btn.set_child(Some(&btn_box));
         media_btn.add_css_class("media-type-button");
-        
+
         media_grid.attach(&media_btn, (i % 3) as i32, (i / 3) as i32, 1, 1);
     }
     content_box.append(&media_grid);
@@ -1387,4 +1476,3 @@ fn create_create_post_view() -> ScrolledWindow {
     scroll.set_child(Some(&post_box));
     scroll
 }
-
