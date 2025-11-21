@@ -4,6 +4,12 @@ Write-Host "🎓 LinkWithMentor - GTK4 Social Media App" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host ""
 
+# Add MSYS2 to PATH if it exists (common install location)
+if (Test-Path "C:\msys64\mingw64\bin") {
+    $env:PATH = "C:\msys64\mingw64\bin;" + $env:PATH
+    Write-Host "Added C:\msys64\mingw64\bin to PATH" -ForegroundColor Gray
+}
+
 # Check if GTK4 is installed
 Write-Host "Checking GTK4 installation..." -ForegroundColor Yellow
 try {
