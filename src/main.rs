@@ -618,7 +618,7 @@ fn create_media_view() -> ScrolledWindow {
     grid.set_column_spacing(16);
     grid.add_css_class("media-grid");
 
-    let media_items = vec![
+    let media_items = [
         ("🖼️", "Project Screenshot", "2 days ago"),
         ("📹", "Tutorial Video", "5 days ago"),
         ("📄", "Resume.pdf", "1 week ago"),
@@ -682,7 +682,7 @@ fn create_share_view() -> GtkBox {
     let options_box = GtkBox::new(Orientation::Horizontal, 20);
     options_box.set_halign(gtk4::Align::Center);
 
-    let share_options = vec![
+    let share_options = [
         ("📄", "Documents"),
         ("🖼️", "Images"),
         ("📹", "Videos"),
@@ -932,7 +932,7 @@ fn create_notifications_view() -> ScrolledWindow {
 
     // Filter buttons
     let filter_box = GtkBox::new(Orientation::Horizontal, 12);
-    let filters = vec!["All", "Mentions", "Likes", "Comments", "Follows"];
+    let filters = ["All", "Mentions", "Likes", "Comments", "Follows"];
 
     for filter in filters {
         let filter_btn = Button::with_label(filter);
@@ -1067,7 +1067,7 @@ fn create_search_view() -> GtkBox {
 
     // Filter tabs
     let tabs_box = GtkBox::new(Orientation::Horizontal, 12);
-    let tabs = vec!["All", "People", "Groups", "Posts", "Media"];
+    let tabs = ["All", "People", "Groups", "Posts", "Media"];
 
     for tab in tabs {
         let tab_btn = Button::with_label(tab);
@@ -1086,7 +1086,7 @@ fn create_search_view() -> GtkBox {
     results_label.set_margin_top(20);
     main_box.append(&results_label);
 
-    let recent_searches = vec![
+    let recent_searches = [
         ("👤", "Alice Johnson", "User"),
         ("👥", "Rust Developers", "Group"),
         ("📝", "GTK4 tutorial", "Post"),
@@ -1106,7 +1106,7 @@ fn create_search_view() -> GtkBox {
     main_box.append(&trending_label);
 
     let trending_box = GtkBox::new(Orientation::Horizontal, 12);
-    let trending_topics = vec!["#Rust", "#GTK4", "#OpenSource", "#Mentorship", "#WebDev"];
+    let trending_topics = ["#Rust", "#GTK4", "#OpenSource", "#Mentorship", "#WebDev"];
 
     for topic in trending_topics {
         let topic_btn = Button::with_label(topic);
@@ -1415,7 +1415,7 @@ fn create_create_post_view() -> ScrolledWindow {
     media_grid.set_row_spacing(12);
     media_grid.set_column_spacing(12);
 
-    let media_types = vec![
+    let media_types = [
         ("🖼️", "Photo"),
         ("📹", "Video"),
         ("📄", "Document"),
