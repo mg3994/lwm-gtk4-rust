@@ -171,12 +171,7 @@ jobs:
         }
         
         # Create a simple launcher script
-        $launcherScript = @"
-@echo off
-set GTK_THEME=win32
-set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas
-"%~dp0linkwithmentor.exe" %*
-"@
+        $launcherScript = '@echo off' + "`n" + 'set GTK_THEME=win32' + "`n" + 'set GSETTINGS_SCHEMA_DIR=%~dp0share\glib-2.0\schemas' + "`n" + '"%~dp0linkwithmentor.exe" %*'
         $launcherScript | Out-File -FilePath "release-bundle/LinkWithMentor.bat" -Encoding ASCII
 
     - name: Install NSIS
