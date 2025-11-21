@@ -59,46 +59,106 @@ jobs:
         
         # Copy GTK4 DLLs from MSYS2
         $msys2Path = "C:\msys64\mingw64\bin"
-        $dlls = @(
+        
+        # Debug: List available GTK/GLib DLLs
+        Write-Host "Available GTK/GLib DLLs in $msys2Path:"
+        Get-ChildItem "$msys2Path\lib*gtk*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+        Get-ChildItem "$msys2Path\lib*glib*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+        Get-ChildItem "$msys2Path\lib*gobject*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+        Get-ChildItem "$msys2Path\lib*gio*.dll" -ErrorAction SilentlyContinue | ForEach-Object { Write-Host "  $($_.Name)" }
+        
+        # Core GTK4 and GLib libraries
+        $coreDlls = @(
           "libgtk-4-1.dll",
-          "libgdk-4-1.dll", 
+          "libgdk-4-1.dll",
           "libglib-2.0-0.dll",
-          "libgobject-2.0-0.dll",
+          "libgobject-2.0-0.dll", 
           "libgio-2.0-0.dll",
+          "libgmodule-2.0-0.dll"
+        )
+        
+        # Graphics and rendering libraries
+        $graphicsDlls = @(
           "libcairo-2.dll",
           "libcairo-gobject-2.dll",
           "libpango-1.0-0.dll",
           "libpangocairo-1.0-0.dll",
           "libpangowin32-1.0-0.dll",
           "libgdk_pixbuf-2.0-0.dll",
+          "libharfbuzz-0.dll",
+          "libfontconfig-1.dll",
+          "libfreetype-6.dll",
+          "libpixman-1-0.dll",
+          "libpng16-16.dll"
+        )
+        
+        # System and utility libraries
+        $systemDlls = @(
           "libintl-8.dll",
-          "libiconv-2.dll",
+          "libiconv-2.dll", 
           "libpcre2-8-0.dll",
           "libffi-8.dll",
           "zlib1.dll",
           "libwinpthread-1.dll",
           "libgcc_s_seh-1.dll",
           "libstdc++-6.dll",
-          "libharfbuzz-0.dll",
-          "libfontconfig-1.dll",
-          "libfreetype-6.dll",
-          "libpixman-1-0.dll",
-          "libpng16-16.dll",
           "libbz2-1.dll",
-          "libbrotlidec.dll",
-          "libbrotlicommon.dll",
-          "libgraphite2.dll",
           "libexpat-1.dll"
         )
         
+        # Optional libraries (may not exist in all installations)
+        $optionalDlls = @(
+          "libbrotlidec.dll",
+          "libbrotlicommon.dll", 
+          "libgraphite2.dll",
+          "libfribidi-0.dll",
+          "libthai-0.dll",
+          "libdatrie-1.dll"
+        )
+        
+        # Combine all DLL lists
+        $allDlls = $coreDlls + $graphicsDlls + $systemDlls + $optionalDlls
+        
         Write-Host "Copying GTK4 DLLs from $msys2Path"
-        foreach ($dll in $dlls) {
+        $copiedCount = 0
+        $missingCount = 0
+        
+        foreach ($dll in $allDlls) {
           $source = Join-Path $msys2Path $dll
           if (Test-Path $source) {
             Copy-Item $source release-bundle/
-            Write-Host "Copied: $dll"
+            Write-Host "✓ Copied: $dll"
+            $copiedCount++
           } else {
-            Write-Host "Warning: $dll not found"
+            Write-Host "⚠ Missing: $dll"
+            $missingCount++
+          }
+        }
+        
+        Write-Host "Summary: $copiedCount DLLs copied, $missingCount missing"
+        
+        # Alternative approach: Copy all GTK/GLib related DLLs found
+        Write-Host "Copying all GTK/GLib DLLs found in MSYS2..."
+        $patterns = @("*gtk*.dll", "*glib*.dll", "*gobject*.dll", "*gio*.dll", "*gdk*.dll", "*pango*.dll", "*cairo*.dll")
+        foreach ($pattern in $patterns) {
+          Get-ChildItem "$msys2Path\$pattern" -ErrorAction SilentlyContinue | ForEach-Object {
+            $destPath = Join-Path "release-bundle" $_.Name
+            if (-not (Test-Path $destPath)) {
+              Copy-Item $_.FullName "release-bundle/"
+              Write-Host "✓ Auto-copied: $($_.Name)"
+            }
+          }
+        }
+        
+        # Verify critical DLLs are present
+        $criticalDlls = @("libgtk-4-1.dll", "libglib-2.0-0.dll", "libgobject-2.0-0.dll", "libgio-2.0-0.dll")
+        foreach ($dll in $criticalDlls) {
+          $bundlePath = Join-Path "release-bundle" $dll
+          if (-not (Test-Path $bundlePath)) {
+            Write-Error "CRITICAL: $dll is missing from bundle!"
+            exit 1
+          } else {
+            Write-Host "✓ Verified: $dll is in bundle"
           }
         }
         
