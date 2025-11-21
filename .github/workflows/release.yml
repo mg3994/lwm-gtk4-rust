@@ -9,6 +9,10 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -65,3 +69,4 @@ jobs:
         draft: false
         prerelease: false
         generate_release_notes: true
+        token: ${{ secrets.GITHUB_TOKEN }}
